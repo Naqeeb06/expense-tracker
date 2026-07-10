@@ -1,16 +1,19 @@
-# Creating an empty list
+import os
+import csv
+
+# ? Creating an empty list
 expenses_list = []
 
 
-# function for adding expenses
+# ? function for adding expenses
 def add_expense():
     print("Enter the expense details: \n")
-    while(True):
-            expense = input("Enter the expense: \n")
-            if not expense.strip():
-                print("You cannot leave the field empty")
-            else:
-                break
+    while True:
+        expense = input("Enter the expense: \n")
+        if not expense.strip():
+            print("You cannot leave the field empty")
+        else:
+            break
     while True:
         try:
             expense_amount = int(input("Enter the amount: \n"))
@@ -18,21 +21,23 @@ def add_expense():
         except ValueError:
             print("\nEnter amount in numbers")
 
-    while(True):
-            expense_category = input("Enter the category: \n")
-            if not expense_category.strip():
-                print("You cannot leave the field empty")
-            else:
-                break
-    # creating a dictionary for storing a single expense
+    while True:
+        expense_category = input("Enter the category: \n")
+        if not expense_category.strip():
+            print("You cannot leave the field empty")
+        else:
+            break
+    # ? creating a dictionary for storing a single expense
     expense_dict = {
         "Expense": expense,
         "Amount": expense_amount,
         "Category": expense_category,
     }
     expenses_list.append(expense_dict)
+    save_expenses(expense_dict)
 
-#function for displaying expenses
+
+# ? function for displaying expenses
 def display_expenses():
     if not expenses_list:
         print("No expenses added yet")
@@ -43,6 +48,17 @@ def display_expenses():
             print(f"\nExpense:{expense['Expense']}")
             print(f"Category:{expense['Category']}")
             print(f"Amount:{expense['Amount']}\n")
+
+
+# ? function for saving expenses to csv file
+def save_expenses(expense):
+    file_exists = os.path.exists("expenses.csv")
+    with open("expenses.csv", "a", newline="") as csvfile:
+        field_names = ["Expense", "Amount", "Category"]
+        writer = csv.DictWriter(csvfile, fieldnames=field_names)
+        if not file_exists:
+            writer.writeheader()
+        writer.writerow(expense)
 
 
 # Main menu
