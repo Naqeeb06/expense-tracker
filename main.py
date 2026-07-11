@@ -13,7 +13,10 @@ def add_expense():
     while True:
         try:
             expense_amount = int(input("Enter the amount: \n"))
-            break
+            if expense_amount <=0:
+                print("Amount must be greater than 0")
+            else:
+                break
         except ValueError:
             print("\nEnter amount in numbers")
 
@@ -119,6 +122,71 @@ def save_all_expenses(expenses):
         for expense in expenses:
             writer.writerow(expense)
 
+#? function for editing an expense
+def edit_expense():
+    expenses = load_expenses()
+    if not expenses:
+        print("No expenses available to edit")
+        return
+    #! displaying expenses to user
+    display_expenses(expenses)
+
+    #! asking the user which expense to edit
+    while True:
+        try:
+            user_choice = int(input("\nChoose the expense you want to edit.Enter the expense number: "))
+            if user_choice < 1 or user_choice > len(expenses):
+                print("Invalid expense number")
+            else:
+                break
+        except ValueError:
+            print("\nKindly enter the expense number.")
+    
+    print("\n====================\nEdit Expense\n====================\n")
+    print("Note: Leave blank to keep the current value\n")
+    index = user_choice - 1
+    editable_expense = expenses[index]
+
+    #getting new expense from user
+    new_expense = input(f"New Expense ({editable_expense["Expense"]}): ")
+    #!updating the expense value
+    if new_expense:
+        editable_expense["Expense"] = new_expense
+    
+    #getting new amount from user
+    while True:
+        new_amount = input(f"New Amount ({editable_expense["Amount"]}): ")
+        if not new_amount:
+            break
+        else:
+            try:
+                new_amount = int(new_amount)
+                if new_amount <= 0:
+                    print("Amount must be greater than 0")
+                else:
+                    break
+            except ValueError:
+                print("Enter amount in numbers")
+    #! updating the amount
+    if new_amount:
+        editable_expense["Amount"] = new_amount
+
+    #getting new category from user
+    new_category = input(f"New Category ({editable_expense["Category"]}): ")
+    #! updating expense category
+    if new_category:
+        editable_expense["Category"] = new_category
+
+    #?output
+    if not new_expense and not new_amount and not new_category:
+        print("*****\tNo changes made.\t*****")
+    else:
+        print("\n*****\tExpense updated successfully!\t*****")
+    
+    #? saving all expenses
+    save_all_expenses(expenses)
+
+
 #?function containing the main menu
 def main_menu():
     print("\n====================\nExpense Tracker\n====================")
@@ -126,12 +194,13 @@ def main_menu():
     print("2. View Expenses")
     print("3. Total Expense")
     print("4. Delete Expense")
-    print("5. Exit" + "\n")
+    print("5. Edit Expense")
+    print("6. Exit" + "\n")
 
 # Main menu
 while True:
     main_menu()
-    user_input = input("Select an option (1-5): \n")
+    user_input = input("Select an option (1-6): \n")
 
     #! adding the expense
     if user_input == "1":
@@ -162,8 +231,12 @@ while True:
     elif user_input == "4":
         delete_expense()
 
-    #! exiting the program
+    #! editing an expense
     elif user_input == "5":
+        edit_expense()
+
+    #! exiting the program
+    elif user_input == "6":
         print("Till we meet again")
         break
     else:
