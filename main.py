@@ -43,7 +43,7 @@ def display_expenses(expenses):
         print(f"\n-------------------------\nExpense # {i + 1} \n-------------------------")
         print(f"Expense:{expense['Expense']}")
         print(f"Category:{expense['Category']}")
-        print(f"Amount:{expense['Amount']}\n")
+        print(f"Amount:{expense['Amount']}")
 
 
 # ? function for saving expenses to csv file
@@ -79,18 +79,61 @@ def calculate_total(expenses):
         total += expense["Amount"]
     return total
 
+#? function for deleting an expense
+def delete_expense():
+    expenses = load_expenses()
+    if not expenses:
+        print("No expenses available to delete\n")
+        return
+    #!displaying the expenses to user so he can choose which one to delete
+    display_expenses(expenses)
 
-# Main menu
-while True:
-    print("Expense Tracker")
+    #!asking the user to choose the expense number
+    while True:
+        try:
+            user_choice = int(input("Choose the expense you want to delete.Enter the number:  "))
+            if user_choice > len(expenses) or user_choice < 1:
+                print("Invalid expense number")
+            else:
+                break
+        except ValueError:
+            print("Kindly enter the expense number.")
+        
+    
+    index = user_choice - 1
+    deleted_expense = expenses.pop(index)
+    save_all_expenses(expenses)
+    print("Deleted successfully\n")
+    print(f"Expense: {deleted_expense['Expense']}")
+    print(f"Amount: {deleted_expense['Amount']}")
+    print(f"Category: {deleted_expense['Category']}\n")
+
+
+
+#? function for saving all expenses
+def save_all_expenses(expenses):
+    with open("expenses.csv", 'w', newline="") as csvfile:
+        field_names = ["Expense", "Amount", "Category"]
+        writer = csv.DictWriter(csvfile, fieldnames= field_names)
+        writer.writeheader()
+        for expense in expenses:
+            writer.writerow(expense)
+
+#?function containing the main menu
+def main_menu():
+    print("\n====================\nExpense Tracker\n====================")
     print("1. Add Expense")
     print("2. View Expenses")
     print("3. Total Expense")
-    print("4. Exit" + "\n")
+    print("4. Delete Expense")
+    print("5. Exit" + "\n")
 
-    user_input = input("Select an option (1-4): \n")
+# Main menu
+while True:
+    main_menu()
+    user_input = input("Select an option (1-5): \n")
 
-    # adding the expense
+    #! adding the expense
     if user_input == "1":
         while True:
             add_expense()
@@ -101,11 +144,12 @@ while True:
             if choice.lower() == "n":
                 break
 
-    # displaying the expense
+    #! displaying the expense
     elif user_input == "2":
         expenses = load_expenses()
         display_expenses(expenses)
 
+    #!calculating total expense
     elif user_input == "3":
         expenses = load_expenses()
         if not expenses:
@@ -113,9 +157,14 @@ while True:
         else:
             total = calculate_total(expenses)
             print("\nTotal Expense = " , total, "\n")
-    # exiting the program
+    
+    #!deleting an expense
     elif user_input == "4":
+        delete_expense()
+
+    #! exiting the program
+    elif user_input == "5":
         print("Till we meet again")
         break
     else:
-        print("Invalid input. Please choose between 1 and 3")
+        print("Invalid input. Please choose between 1 and 5")
