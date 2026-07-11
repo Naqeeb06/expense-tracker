@@ -2,7 +2,7 @@ import os
 import csv
 
 # ? Creating an empty list
-expenses_list = []
+# expenses_list = []
 
 
 # ? function for adding expenses
@@ -33,21 +33,21 @@ def add_expense():
         "Amount": expense_amount,
         "Category": expense_category,
     }
-    expenses_list.append(expense_dict)
+
     save_expenses(expense_dict)
 
 
 # ? function for displaying expenses
-def display_expenses():
-    if not expenses_list:
-        print("No expenses added yet")
-    else:
-        print("Expense details: \n")
-        for i, expense in enumerate(expenses_list):
-            print(f"Expense # {i + 1}")
-            print(f"\nExpense:{expense['Expense']}")
-            print(f"Category:{expense['Category']}")
-            print(f"Amount:{expense['Amount']}\n")
+def display_expenses(expenses):
+    if not expenses:
+        print("No expense added yet")
+        return
+    print("=========================\nExpense details: \n=========================")
+    for i, expense in enumerate(expenses):
+        print(f"\n-------------------------\nExpense # {i + 1} \n-------------------------")
+        print(f"Expense:{expense['Expense']}")
+        print(f"Category:{expense['Category']}")
+        print(f"Amount:{expense['Amount']}\n")
 
 
 # ? function for saving expenses to csv file
@@ -59,6 +59,22 @@ def save_expenses(expense):
         if not file_exists:
             writer.writeheader()
         writer.writerow(expense)
+
+
+# ? function for loading expenses from csv file
+def load_expenses():
+    expenses = []
+    file_exists = os.path.exists("expenses.csv")
+    if not file_exists:
+        return expenses
+    
+    with open("expenses.csv", "r", newline="") as read_file:
+        reader = csv.DictReader(read_file)
+
+        for row in reader:
+            row["Amount"] = int(row["Amount"])
+            expenses.append(row)
+    return expenses
 
 
 # Main menu
@@ -83,7 +99,8 @@ while True:
 
     # displaying the expense
     elif user_input == "2":
-        display_expenses()
+        expenses = load_expenses()
+        display_expenses(expenses)
 
     # exiting the program
     elif user_input == "3":
