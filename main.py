@@ -1,10 +1,6 @@
 import os
 import csv
 
-# ? Creating an empty list
-# expenses_list = []
-
-
 # ? function for adding expenses
 def add_expense():
     print("Enter the expense details: \n")
@@ -76,15 +72,23 @@ def load_expenses():
             expenses.append(row)
     return expenses
 
+#? function for calculating the total expense
+def calculate_total(expenses):
+    total = 0
+    for expense in expenses:
+        total += expense["Amount"]
+    return total
+
 
 # Main menu
 while True:
     print("Expense Tracker")
     print("1. Add Expense")
     print("2. View Expenses")
-    print("3. Exit" + "\n")
+    print("3. Total Expense")
+    print("4. Exit" + "\n")
 
-    user_input = input("Select an option (1-3): \n")
+    user_input = input("Select an option (1-4): \n")
 
     # adding the expense
     if user_input == "1":
@@ -102,8 +106,15 @@ while True:
         expenses = load_expenses()
         display_expenses(expenses)
 
-    # exiting the program
     elif user_input == "3":
+        expenses = load_expenses()
+        if not expenses:
+            print("No expense added yet")
+        else:
+            total = calculate_total(expenses)
+            print("\nTotal Expense = " , total, "\n")
+    # exiting the program
+    elif user_input == "4":
         print("Till we meet again")
         break
     else:
