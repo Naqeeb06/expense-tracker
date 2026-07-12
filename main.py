@@ -1,6 +1,7 @@
 import os
 import csv
 
+
 # ? function for adding expenses
 def add_expense():
     print("Enter the expense details: \n")
@@ -13,7 +14,7 @@ def add_expense():
     while True:
         try:
             expense_amount = int(input("Enter the amount: \n"))
-            if expense_amount <=0:
+            if expense_amount <= 0:
                 print("Amount must be greater than 0")
             else:
                 break
@@ -43,7 +44,9 @@ def display_expenses(expenses):
         return
     print("=========================\nExpense details: \n=========================")
     for i, expense in enumerate(expenses):
-        print(f"\n-------------------------\nExpense # {i + 1} \n-------------------------")
+        print(
+            f"\n-------------------------\nExpense # {i + 1} \n-------------------------"
+        )
         print(f"Expense:{expense['Expense']}")
         print(f"Category:{expense['Category']}")
         print(f"Amount:{expense['Amount']}")
@@ -66,7 +69,7 @@ def load_expenses():
     file_exists = os.path.exists("expenses.csv")
     if not file_exists:
         return expenses
-    
+
     with open("expenses.csv", "r", newline="") as read_file:
         reader = csv.DictReader(read_file)
 
@@ -75,14 +78,16 @@ def load_expenses():
             expenses.append(row)
     return expenses
 
-#? function for calculating the total expense
+
+# ? function for calculating the total expense
 def calculate_total(expenses):
     total = 0
     for expense in expenses:
         total += expense["Amount"]
     return total
 
-#? function for deleting an expense
+
+# ? function for deleting an expense
 def delete_expense():
     expenses = load_expenses()
     if not expenses:
@@ -94,15 +99,16 @@ def delete_expense():
     #!asking the user to choose the expense number
     while True:
         try:
-            user_choice = int(input("Choose the expense you want to delete.Enter the number:  "))
+            user_choice = int(
+                input("Choose the expense you want to delete.Enter the number:  ")
+            )
             if user_choice > len(expenses) or user_choice < 1:
                 print("Invalid expense number")
             else:
                 break
         except ValueError:
             print("Kindly enter the expense number.")
-        
-    
+
     index = user_choice - 1
     deleted_expense = expenses.pop(index)
     save_all_expenses(expenses)
@@ -112,17 +118,17 @@ def delete_expense():
     print(f"Category: {deleted_expense['Category']}\n")
 
 
-
-#? function for saving all expenses
+# ? function for saving all expenses
 def save_all_expenses(expenses):
-    with open("expenses.csv", 'w', newline="") as csvfile:
+    with open("expenses.csv", "w", newline="") as csvfile:
         field_names = ["Expense", "Amount", "Category"]
-        writer = csv.DictWriter(csvfile, fieldnames= field_names)
+        writer = csv.DictWriter(csvfile, fieldnames=field_names)
         writer.writeheader()
         for expense in expenses:
             writer.writerow(expense)
 
-#? function for editing an expense
+
+# ? function for editing an expense
 def edit_expense():
     expenses = load_expenses()
     if not expenses:
@@ -134,28 +140,32 @@ def edit_expense():
     #! asking the user which expense to edit
     while True:
         try:
-            user_choice = int(input("\nChoose the expense you want to edit.Enter the expense number: "))
+            user_choice = int(
+                input(
+                    "\nChoose the expense you want to edit.Enter the expense number: "
+                )
+            )
             if user_choice < 1 or user_choice > len(expenses):
                 print("Invalid expense number")
             else:
                 break
         except ValueError:
             print("\nKindly enter the expense number.")
-    
+
     print("\n====================\nEdit Expense\n====================\n")
     print("Note: Leave blank to keep the current value\n")
     index = user_choice - 1
     editable_expense = expenses[index]
 
-    #getting new expense from user
-    new_expense = input(f"New Expense ({editable_expense["Expense"]}): ")
+    # getting new expense from user
+    new_expense = input(f"New Expense ({editable_expense['Expense']}): ")
     #!updating the expense value
     if new_expense:
         editable_expense["Expense"] = new_expense
-    
-    #getting new amount from user
+
+    # getting new amount from user
     while True:
-        new_amount = input(f"New Amount ({editable_expense["Amount"]}): ")
+        new_amount = input(f"New Amount ({editable_expense['Amount']}): ")
         if not new_amount:
             break
         else:
@@ -171,23 +181,68 @@ def edit_expense():
     if new_amount:
         editable_expense["Amount"] = new_amount
 
-    #getting new category from user
-    new_category = input(f"New Category ({editable_expense["Category"]}): ")
+    # getting new category from user
+    new_category = input(f"New Category ({editable_expense['Category']}): ")
     #! updating expense category
     if new_category:
         editable_expense["Category"] = new_category
 
-    #?output
+    # ?output
     if not new_expense and not new_amount and not new_category:
         print("*****\tNo changes made.\t*****")
     else:
         print("\n*****\tExpense updated successfully!\t*****")
-    
-    #? saving all expenses
+
+    # ? saving all expenses
     save_all_expenses(expenses)
 
 
-#?function containing the main menu
+# ? function for filtering the expenses
+def filter_expenses():
+    expenses = load_expenses()
+    if not expenses:
+        print("No expenses added yet.")
+        return
+
+    expense_category = set()
+
+    # looping through expenses
+    for expense in expenses:
+        expense_category.add(expense["Category"])                           
+
+    print("\n====================\nAvailable Categories\n====================\n")
+
+    # printing each category
+    for i, category in enumerate(expense_category):
+        print(i+1, "- ", category)
+
+    # ask user for category
+    while True:
+        user_choice = input("\nEnter the category: ")
+
+        valid = False
+        for category in expense_category:
+            if user_choice.lower() == category.lower():
+                valid = True
+                break
+        
+        if valid:
+            break
+        else:
+            print("Invalid Category.Please choose one of the available categories")
+        
+    filtered_expenses = []
+
+    # looping through expenses and matching the category and adding to filtered expenses list
+    for expense in expenses:
+        if user_choice.lower() == expense["Category"].lower():
+            filtered_expenses.append(expense)
+
+    # displaying expenses to user
+    display_expenses(filtered_expenses)
+
+
+# ?function containing the main menu
 def main_menu():
     print("\n====================\nExpense Tracker\n====================")
     print("1. Add Expense")
@@ -195,12 +250,14 @@ def main_menu():
     print("3. Total Expense")
     print("4. Delete Expense")
     print("5. Edit Expense")
-    print("6. Exit" + "\n")
+    print("6. Filter Expenses")
+    print("7. Exit" + "\n")
+
 
 # Main menu
 while True:
     main_menu()
-    user_input = input("Select an option (1-6): \n")
+    user_input = input("Select an option (1-7): \n")
 
     #! adding the expense
     if user_input == "1":
@@ -225,8 +282,8 @@ while True:
             print("No expense added yet")
         else:
             total = calculate_total(expenses)
-            print("\nTotal Expense = " , total, "\n")
-    
+            print("\nTotal Expense = ", total, "\n")
+
     #!deleting an expense
     elif user_input == "4":
         delete_expense()
@@ -235,9 +292,13 @@ while True:
     elif user_input == "5":
         edit_expense()
 
-    #! exiting the program
+    #! filtering expenses
     elif user_input == "6":
-        print("Till we meet again")
+        filter_expenses()
+
+    #! exiting the program
+    elif user_input == "7":
+        print("Untill we meet again")
         break
     else:
-        print("Invalid input. Please choose between 1 and 5")
+        print("Invalid input. Please choose between 1 and 7")
